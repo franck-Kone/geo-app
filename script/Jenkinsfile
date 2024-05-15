@@ -8,7 +8,9 @@ pipeline{
     stages{
         stage("sonarQube scan"){
             steps {
-                sh 'mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=franck-Kone_geolocation'
+                withSonarQubeEnv('sonar Analysis') {
+                   sh 'mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=franck-Kone_geo-app'
+                }
             }
         }
         stage('maven') {
