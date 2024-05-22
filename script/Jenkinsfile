@@ -7,13 +7,13 @@ pipeline{
 
     stages{
         //I commented this out because I didn't set a sonarqube server
-        // stage("sonarQube scan"){
-        //     steps {
-        //         withSonarQubeEnv(credentialsId:'sonarQube-id', installationName:'SonarQube') {
-        //            sh 'mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=franck-Kone_geo-app'
-        //         }
-        //     }
-        // }
+        stage("sonarQube scan"){
+            steps {
+                withSonarQubeEnv(credentialsId:'sonarQube-id', installationName:'SonarQube') {
+                   sh 'mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=franck-Kone_geo-app'
+                }
+            }
+        }
         stage('maven') {
             steps {
                 sh 'mvn clean validate compile install test package'
