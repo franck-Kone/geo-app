@@ -7,13 +7,29 @@ pipeline{
 
     stages{
         //I commented this out because I didn't set a sonarqube server
-        stage("sonarQube scan"){
+        stage("sonarQube analysis"){
             steps {
                 withSonarQubeEnv(credentialsId:'sonarQube-id', installationName:'SonarQube') {
                    sh 'mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=franck-Kone_geo-app'
                 }
             }
         }
+
+        stage('Check Quality gate') {
+            steps {
+                echo 'Checking quality gate...'
+                script{
+                    timeout(time: 20, unit: 'MINUTES') {
+                        def qg = waitForQualityGate() {
+                            if (qg.status != 'OK') {
+                                error "Pipeline stopped because of quality"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
         stage('maven') {
             steps {
                 sh 'mvn clean validate compile install test package'
@@ -24,6 +40,6 @@ pipeline{
             steps {
                 sh 'curl -uadmin:AP8gcgmmset5jeYChTJYDN6XmDd -T target/bioMedical*.jar "http://ec2-100-26-238-24.compute-1.amazonaws.com:8081/artifactory/geolocation/geo/bio_${BUILD_ID}.jar"'
             }  
-        }
+        } 
     }
 }
