@@ -6,12 +6,12 @@ pipeline{
     }
 
     stages{
-        // stage('Checkout'){
-        //     steps{
-        //         git branch: 'main', 
-        //         url: 'https://github.com/franck-Kone/geo-app.git'
-        //     }
-        // }
+        stage('Checkout'){
+            steps{
+                git branch: 'main', 
+                url: 'https://github.com/franck-Kone/geo-app.git'
+            }
+        }
         //I commented this out because I didn't set a sonarqube server
         stage("sonarQube analysis"){
             steps {
@@ -29,8 +29,7 @@ pipeline{
                         def qg = waitForQualityGate() 
                        //normally i should have != OK, so I intentionally changed it to == OK 
                         if (qg.status == 'OK') {
-                            error "Pipeline stopped because of quality
-                            Status: ${qg.status}"
+                            error "Pipeline stopped because of quality Status: ${qg.status}"
                         }
                         
                     }
