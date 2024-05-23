@@ -21,6 +21,7 @@ pipeline{
                 script{
                     timeout(time: 20, unit: 'MINUTES') {
                         def qg = waitForQualityGate() 
+                        echo "Quality Gate Status: ${qg.status}"
                             if (qg.status == 'OK') {
                                 error "Pipeline stopped because of quality"
                             }
