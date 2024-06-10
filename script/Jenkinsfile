@@ -8,7 +8,7 @@ pipeline{
            }
            stage("copy pipeline"){
                  steps{
-                     sh "scp -r /var/lib/jenkins/workspace/test/* ec2-user@18.209.29.123:~/test1"
+                     sh "sudo scp -r /var/lib/jenkins/workspace/test/* ec2-user@18.209.29.123:~/test1"
                  }
            }
            stage("create directory"){
