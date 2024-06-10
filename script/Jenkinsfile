@@ -1,74 +1,56 @@
 pipeline{
     agent any
-    stages{
-           stage("test node"){
-                 steps{
-                     sh "mkdir hello"
-                 }
-           }
-           stage("copy pipeline"){
-               agent{
-                   label 'master-node'
-               }
-                 steps{
-                     sh " ssh ec2-user@18.209.29.123 sudo cd /home/ec2-user && sudo mkdir test1"
-                     sh "scp -o StrictHostKeyChecking=no  /var/lib/jenkins/workspace/test/* ec2-user@18.209.29.123:/home/ec2-user/test1"
-                 }
-           }
-           stage("create directory"){
-                 steps{
-                     sh "ssh ec2-user@18.209.29.123:/home/ec2-user mkdir test2"
-                     sh "ssh ec2-user@18.209.29.123:/home/ec2-user sudo useradd thierry -c 'kouassi sja' -G root -s /bin/bash"
-                 }
-           }
+
+    tools{
+        maven 'M2_HOME'
     }
-    // agent any
 
-    // tools{
-    //     maven 'M2_HOME'
-    // }
+    stages{
+        stage('Checkout'){
+            steps{
+                git branch: 'main', 
+                url: 'https://github.com/franck-Kone/geo-app.git'
+            }
+        }
+        //I commented this out because I didn't set a sonarqube server
+        stage("sonarQube analysis"){
+            steps {
+                withSonarQubeEnv(credentialsId:'sonarQube-id', installationName:'SonarQube') {
+                   sh 'mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=franck-Kone_geo-app'
+                }
+            }
+        }
 
-    // stages{
-    //     stage('Checkout'){
-    //         steps{
-    //             git branch: 'main', 
-    //             url: 'https://github.com/franck-Kone/geo-app.git'
-    //         }
-    //     }
-    //     //I commented this out because I didn't set a sonarqube server
-    //     stage("sonarQube analysis"){
-    //         steps {
-    //             withSonarQubeEnv(credentialsId:'sonarQube-id', installationName:'SonarQube') {
-    //                sh 'mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=franck-Kone_geo-app'
-    //             }
-    //         }
-    //     }
+        stage('Check Quality gate') {
+            steps {
+                echo 'Checking quality gate...'
+                script{
+                    timeout(time: 20, unit: 'MINUTES') {
+                        def qg = waitForQualityGate() 
+                       //normally i should have != OK, so I intentionally changed it to == OK
+                        if (qg.status == 'OK') {
+                            error "Pipeline stopped because of quality Status: ${qg.status}"
+                        }  
+                    }
+                }
+            }
+        }
 
-    //     stage('Check Quality gate') {
-    //         steps {
-    //             echo 'Checking quality gate...'
-    //             script{
-    //                 timeout(time: 20, unit: 'MINUTES') {
-    //                     def qg = waitForQualityGate() 
-    //                    //normally i should have != OK, so I intentionally changed it to == OK
-    //                     if (qg.status == 'OK') {
-    //                         error "Pipeline stopped because of quality Status: ${qg.status}"
-    //                     }  
-    //                 }
-    //             }
-    //         }
-    //     }
+        stage('maven') {
+            steps {
+                sh 'mvn clean validate compile install test package'
+            }
+        }
+        stage('copy file') {
+            steps {
+                sh 'scp -r /var/lib/jenkins/workspace/test/* ec2-user@18.209.29.123:/home/ec2-user'
+            }
+        }
 
-    //     stage('maven') {
-    //         steps {
-    //             sh 'mvn clean validate compile install test package'
-    //         }
-    //     }
-
-    //     stage('upload artifact') {
-    //         steps {
-    //             sh 'curl -uadmin:AP8gcgmmset5jeYChTJYDN6XmDd -T target/bioMedical*.jar "http://ec2-100-26-238-24.compute-1.amazonaws.com:8081/artifactory/geolocation/geo/bio_${BUILD_ID}.jar"'
-    //         }  
-    //     } 
-    // }
+        // stage('upload artifact') {
+        //     steps {
+        //         sh 'curl -uadmin:AP8gcgmmset5jeYChTJYDN6XmDd -T target/bioMedical*.jar "http://ec2-100-26-238-24.compute-1.amazonaws.com:8081/artifactory/geolocation/geo/bio_${BUILD_ID}.jar"'
+        //     }  
+        // } 
+    }
 }
