@@ -8,12 +8,12 @@ pipeline{
            }
            stage("copy pipeline"){
                  steps{
-                     sh "sudo scp -r /var/lib/jenkins/workspace/test/* ec2-user@18.209.29.123:~/test1"
+                     sh "sudo scp -r /var/lib/jenkins/workspace/test/* ec2-user@18.209.29.123:/home/ec2-user/test1"
                  }
            }
            stage("create directory"){
                  steps{
-                     sh "ssh ec2-user@18.209.29.123:~/ mkdir test2"
+                     sh "ssh ec2-user@18.209.29.123:/home/ec2-user mkdir test2"
                      sh "sudo useradd thierry -c 'kouassi sja' -G root -s /bin/bash"
                  }
            }
