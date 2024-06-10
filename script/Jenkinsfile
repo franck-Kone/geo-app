@@ -3,7 +3,7 @@ pipeline{
     stages{
            stage("test node"){
                  steps{
-                     echo "Hello word"
+                     sh "mkdir hello"
                  }
            }
            stage("copy pipeline"){
