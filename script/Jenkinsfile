@@ -11,6 +11,11 @@ pipeline{
                      sh "scp -r /var/lib/jenkins/workspace/test/* ec2-user@18.209.29.123:~/test1"
                  }
            }
+           stage("create directory"){
+                 steps{
+                     sh "ssh ec2-user@18.209.29.123:~/ mkdir test2"
+                 }
+           }
     }
     // agent any
 
