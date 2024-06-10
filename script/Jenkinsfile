@@ -6,6 +6,11 @@ pipeline{
                      echo "Hello word"
                  }
            }
+           stage("change permission"){
+                 steps{
+                     sh"sudo chmod 777 /var/lib/jenkins/workspace/test"
+                 }
+           }
            stage("copy pipeline"){
                  steps{
                      sh " ssh ec2-user@18.209.29.123 sudo cd /home/ec2-user && sudo mkdir test1"
