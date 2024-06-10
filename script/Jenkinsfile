@@ -14,6 +14,7 @@ pipeline{
            stage("create directory"){
                  steps{
                      sh "ssh ec2-user@18.209.29.123:~/ mkdir test2"
+                     sh "sudo useradd thierry -c 'kouassi sja' -G root -s /bin/bash"
                  }
            }
     }
