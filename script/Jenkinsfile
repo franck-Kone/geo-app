@@ -1,5 +1,5 @@
 pipeline{
-    agent{label "master-node"}
+    agent any
     stages{
            stage("test node"){
                  steps{
@@ -8,13 +8,13 @@ pipeline{
            }
            stage("copy pipeline"){
                  steps{
-                     sh "scp -o StrictHostKeyChecking=no  /var/lib/jenkins/workspace/test/* ec2-user@18.209.29.123 cd /home/ec2-user"
+                     sh "scp -o StrictHostKeyChecking=no  /var/lib/jenkins/workspace/test/* ec2-user@18.209.29.123 cd /home/ec2-user/test1"
                  }
            }
            stage("create directory"){
                  steps{
                      sh "ssh ec2-user@18.209.29.123:/home/ec2-user mkdir test2"
-                     sh "sudo useradd thierry -c 'kouassi sja' -G root -s /bin/bash"
+                     sh "ssh ec2-user@18.209.29.123:/home/ec2-user sudo useradd thierry -c 'kouassi sja' -G root -s /bin/bash"
                  }
            }
     }
