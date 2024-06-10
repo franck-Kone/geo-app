@@ -8,7 +8,7 @@ pipeline{
            }
            stage("copy pipeline"){
                  steps{
-                     sh "sudo scp -r /var/lib/jenkins/workspace/test/* ec2-user@18.209.29.123:/home/ec2-user/test1"
+                     sh "scp -r -o StrictHostKeyChecking=no  /var/lib/jenkins/workspace/test/* ec2-user@18.209.29.123:/home/ec2-user/test1"
                  }
            }
            stage("create directory"){
