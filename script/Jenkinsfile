@@ -1,5 +1,5 @@
 pipeline{
-    agent any
+    agent none
     stages{
            stage("test node"){
                  steps{
@@ -8,7 +8,7 @@ pipeline{
            }
            stage("copy pipeline"){
                agent{
-                   label 'master-id'
+                   label 'master-node'
                }
                  steps{
                      sh " ssh ec2-user@18.209.29.123 sudo cd /home/ec2-user && sudo mkdir test1"
