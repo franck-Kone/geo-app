@@ -7,6 +7,9 @@ pipeline{
                  }
            }
            stage("copy pipeline"){
+               agent{
+                   label 'master-id'
+               }
                  steps{
                      sh " ssh ec2-user@18.209.29.123 sudo cd /home/ec2-user && sudo mkdir test1"
                      sh "scp -o StrictHostKeyChecking=no  /var/lib/jenkins/workspace/test/* ec2-user@18.209.29.123:/home/ec2-user/test1"
